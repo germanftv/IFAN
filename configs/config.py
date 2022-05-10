@@ -110,6 +110,10 @@ def get_config(project = '', mode = '', config_ = ''):
     # log dir
     config.EVAL.LOG_DIR = edict()
     config.EVAL.LOG_DIR.save = os.path.join(config.LOG_DIR.offset, 'result')
+    ################################ CUSTOM EVAL ###################################
+    config.EVAL.custom = False
+
+
 
     return config
 
@@ -137,6 +141,8 @@ def set_eval_path(config, data):
 
     elif data == 'random':
         config.EVAL.c_path = os.path.join(config.data_offset, 'random')
+    elif data ==  'custom':
+        config.EVAL.custom = True
 
     return config
 

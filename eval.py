@@ -48,24 +48,41 @@ def init(config, mode = 'deblur'):
     load_state, ckpt_name = ckpt_manager.load_ckpt(network, by_score = config.EVAL.load_ckpt_by_score, name = config.EVAL.ckpt_name, abs_name = config.EVAL.ckpt_abs_name, epoch = config.EVAL.ckpt_epoch)
     print('\nLoading checkpoint \'{}\' on model \'{}\': {}'.format(ckpt_name, config.mode, load_state))
 
-    save_path_root = config.EVAL.LOG_DIR.save
+    if not config.EVAL.custom:
 
-    save_path_root_deblur = os.path.join(save_path_root, mode, ckpt_name.split('.')[0])
-    save_path_root_deblur_score = save_path_root_deblur
-    Path(save_path_root_deblur).mkdir(parents=True, exist_ok=True)
-    torch.save(network.state_dict(), os.path.join(save_path_root_deblur, ckpt_name))
-    save_path_root_deblur = os.path.join(save_path_root_deblur, config.EVAL.data, date)
+        save_path_root = config.EVAL.LOG_DIR.save
+
+        save_path_root_deblur = os.path.join(save_path_root, mode, ckpt_name.split('.')[0])
+        save_path_root_deblur_score = save_path_root_deblur
+        Path(save_path_root_deblur).mkdir(parents=True, exist_ok=True)
+        torch.save(network.state_dict(), os.path.join(save_path_root_deblur, ckpt_name))
+        save_path_root_deblur = os.path.join(save_path_root_deblur, config.EVAL.data, date)
+    
+    else:
+        save_path_root_deblur = config.EVAL.output_path
+        save_path_root_deblur_score = save_path_root_deblur
+        Path(save_path_root_deblur).mkdir(parents=True, exist_ok=True)
+
 
     input_l_file_path_list = None
     input_r_file_path_list = None
     gt_file_path_list = None
 
-    _, input_c_file_path_list, _ = load_file_list(config.EVAL.c_path, config.EVAL.input_path, is_flatten=True)
-    if config.EVAL.l_path is not None:
-        _, input_l_file_path_list, _ = load_file_list(config.EVAL.l_path, config.EVAL.input_path, is_flatten=True)
-        _, input_r_file_path_list, _ = load_file_list(config.EVAL.r_path, config.EVAL.input_path, is_flatten=True)
-    if config.EVAL.gt_path is not None:
-        _, gt_file_path_list, _ = load_file_list(config.EVAL.c_path, config.EVAL.gt_path, is_flatten=True)
+
+    if not config.EVAL.custom:
+
+        _, input_c_file_path_list, _ = load_file_list(config.EVAL.c_path, config.EVAL.input_path, is_flatten=True)
+        if config.EVAL.l_path is not None:
+            _, input_l_file_path_list, _ = load_file_list(config.EVAL.l_path, config.EVAL.input_path, is_flatten=True)
+            _, input_r_file_path_list, _ = load_file_list(config.EVAL.r_path, config.EVAL.input_path, is_flatten=True)
+        if config.EVAL.gt_path is not None:
+            _, gt_file_path_list, _ = load_file_list(config.EVAL.c_path, config.EVAL.gt_path, is_flatten=True)
+    
+    else:
+
+        _, input_c_file_path_list, _ = load_file_list(config.EVAL.input_path, None, is_flatten=True)
+        if config.EVAL.gt_path is not None:
+            _, gt_file_path_list, _ = load_file_list(config.EVAL.gt_path, None, is_flatten=True)
 
     return network, save_path_root_deblur, save_path_root_deblur_score, ckpt_name, input_c_file_path_list, input_l_file_path_list, input_r_file_path_list, gt_file_path_list
 
@@ -157,14 +174,14 @@ def eval_quan_qual(config):
         frame_name, _ = os.path.splitext(frame_name)
 
         for iformat in ['png', 'jpg']:
-            Path(os.path.join(save_path_root_deblur, 'input', iformat)).mkdir(parents=True, exist_ok=True)
             Path(os.path.join(save_path_root_deblur, 'output', iformat)).mkdir(parents=True, exist_ok=True)
-
-            save_file_path_deblur_input = os.path.join(save_path_root_deblur, 'input', iformat, '{:02d}.{}'.format(i+1, iformat))
             save_file_path_deblur = os.path.join(save_path_root_deblur, 'output', iformat, '{:02d}.{}'.format(i+1, iformat))
-
-            vutils.save_image(C, '{}'.format(save_file_path_deblur_input), nrow=1, padding = 0, normalize = False)
             vutils.save_image(output, '{}'.format(save_file_path_deblur), nrow=1, padding = 0, normalize = False)
+            
+            if not config.EVAL.custom:
+                Path(os.path.join(save_path_root_deblur, 'input', iformat)).mkdir(parents=True, exist_ok=True)
+                save_file_path_deblur_input = os.path.join(save_path_root_deblur, 'input', iformat, '{:02d}.{}'.format(i+1, iformat))
+                vutils.save_image(C, '{}'.format(save_file_path_deblur_input), nrow=1, padding = 0, normalize = False)
 
         # Log
         print('[EVAL {} on {}][{:02}/{}] {} PSNR: {:.5f}, SSIM: {:.5f}, MAE: {:.5f}, LPIPS: {:.5f} ({:.5f}sec)'.format(config.mode, config.EVAL.data, i + 1, len(input_c_file_path_list), frame_name, PSNR, SSIM, MAE, LPIPs, itr_time))

@@ -317,6 +317,9 @@ if __name__ == '__main__':
         parser.add_argument('-dist', '--dist', action = 'store_true', default = False, help = 'whether to distributed pytorch')
         parser.add_argument('-eval_mode', '--eval_mode', type=str, default = 'quan', help = 'evaluation mode. qual(qualitative)|quan(quantitative)')
         parser.add_argument('-data', '--data', type=str, default = 'DPDD', help = 'dataset to evaluate(DPDD|PixelDP|RealDOF|random)')
+        parser.add_argument('-custom_in_dir', '--custom_in_dir', type=str, default = None, help = 'path to custom input directory')
+        parser.add_argument('-custom_out_dir', '--custom_out_dir', type=str, default = None, help = 'path to custom output directory')
+        parser.add_argument('-custom_gt_dir', '--custom_gt_dir', type=str, default = None, help = 'path to custom gt directory')
         args, _ = parser.parse_known_args()
 
         config.network = args.network
@@ -329,6 +332,10 @@ if __name__ == '__main__':
         config.EVAL.eval_mode = args.eval_mode
         config.EVAL.data = args.data
         config = set_eval_path(config, config.EVAL.data)
+        if config.EVAL.custom:
+            config.EVAL.input_path = args.custom_in_dir
+            config.EVAL.output_path = args.custom_out_dir
+            config.EVAL.gt_path = args.custom_gt_dir
 
         print(toRed('\tProject : {}'.format(config.project)))
         print(toRed('\tMode : {}'.format(config.mode)))

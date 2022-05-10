@@ -1,0 +1,7 @@
+ckpt/
+**/__pycache__
+docs/
+results/*
+.idea/
+.vscode/
+**/logs
