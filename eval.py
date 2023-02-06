@@ -82,7 +82,9 @@ def init(config, mode = 'deblur'):
 
         _, input_c_file_path_list, _ = load_file_list(config.EVAL.input_path, None, is_flatten=True)
         if config.EVAL.gt_path is not None:
-            _, gt_file_path_list, _ = load_file_list(config.EVAL.gt_path, None, is_flatten=True)
+            # _, gt_file_path_list, _ = load_file_list(config.EVAL.gt_path, None, is_flatten=True)
+            filenames = list(map(lambda x: x.split('/')[-1], input_c_file_path_list))
+            gt_file_path_list = np.array(list(map(lambda x: os.path.join(config.EVAL.gt_path, x), filenames)))
 
     return network, save_path_root_deblur, save_path_root_deblur_score, ckpt_name, input_c_file_path_list, input_l_file_path_list, input_r_file_path_list, gt_file_path_list
 
