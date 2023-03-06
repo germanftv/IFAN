@@ -16,7 +16,7 @@ import gc
 import math
 import random
 
-from models import create_model
+from .models import create_model
 from utils import *
 from ckpt_manager import CKPT_Manager
 

@@ -15,12 +15,12 @@ from sklearn.metrics import mean_absolute_error
 from skimage.metrics import structural_similarity
 import collections
 
-from utils import *
-from data_loader.utils import load_file_list, read_frame, refine_image
-from ckpt_manager import CKPT_Manager
+from .utils import *
+from .data_loader.utils import load_file_list, read_frame, refine_image
+from .ckpt_manager import CKPT_Manager
 
-from models import create_model
-import models.archs.LPIPS as LPIPS
+from .models import create_model
+from .models.archs import LPIPS
 
 def mae(img1, img2):
     mae_0=mean_absolute_error(img1[:,:,0], img2[:,:,0],

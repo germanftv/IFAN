@@ -1,5 +1,5 @@
-from configs.config import get_config as main_config
-from configs.config import log_config, print_config
+from .config import get_config as main_config
+from .config import log_config, print_config
 
 def get_config(project = '', mode = '', config = ''):
     ## GLOBAL
