@@ -177,14 +177,14 @@ def eval_quan_qual(config):
         frame_name = os.path.basename(frame_name)
         frame_name, _ = os.path.splitext(frame_name)
 
-        for iformat in ['png', 'jpg']:
+        for iformat in ['png']:
             Path(os.path.join(save_path_root_deblur, 'output', iformat)).mkdir(parents=True, exist_ok=True)
-            save_file_path_deblur = os.path.join(save_path_root_deblur, 'output', iformat, '{:02d}.{}'.format(i+1, iformat))
+            save_file_path_deblur = os.path.join(save_path_root_deblur, 'output', iformat, '{}.{}'.format(frame_name, iformat))
             vutils.save_image(output, '{}'.format(save_file_path_deblur), nrow=1, padding = 0, normalize = False)
             
             if not config.EVAL.custom:
                 Path(os.path.join(save_path_root_deblur, 'input', iformat)).mkdir(parents=True, exist_ok=True)
-                save_file_path_deblur_input = os.path.join(save_path_root_deblur, 'input', iformat, '{:02d}.{}'.format(i+1, iformat))
+                save_file_path_deblur_input = os.path.join(save_path_root_deblur, 'input', iformat, '{}.{}'.format(frame_name, iformat))
                 vutils.save_image(C, '{}'.format(save_file_path_deblur_input), nrow=1, padding = 0, normalize = False)
 
         # Log
